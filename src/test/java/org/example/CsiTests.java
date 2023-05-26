@@ -1,14 +1,21 @@
 package org.example;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.locators.RelativeLocator;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import javax.xml.xpath.XPath;
+
+import java.time.Duration;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class CsiTests {
@@ -32,5 +39,22 @@ public class CsiTests {
     void simpleTest () throws InterruptedException {
         driver.get("http://localhost:3000/");
         Thread.sleep(2000);
+    }
+
+    @Nested
+    @DisplayName ("CRUD")
+    class Crud {
+        @Test
+        @DisplayName("Being on another page, clicking on the logo should return to the main page")
+        void beingOnAnotherPageClickingOnTheLogoShouldReturnToTheMainPage () throws InterruptedException {
+            driver.get("http://localhost:3000/");
+            final WebElement linkCrimes = driver.findElement(By.xpath("//ul/li[1]/a"));
+            linkCrimes.click();
+            final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//img")));
+            logo.click();
+            final String current_url = driver.getCurrentUrl();
+            assertEquals("http://localhost:3000/", current_url);
+        }
     }
 }
