@@ -53,7 +53,7 @@ public class CsiTests {
                     .until(ExpectedConditions.elementToBeClickable(By.xpath("//img")));
             logo.click();
             final String current_url = driver.getCurrentUrl();
-            assertEquals("http://localhost:3000/", current_url);
+            assertEquals(BASE_URL, current_url);
         }
 
         @Test
@@ -64,7 +64,7 @@ public class CsiTests {
                     .until(ExpectedConditions.elementToBeClickable(By.xpath("//img")));
             logo.click();
             final String current_url = driver.getCurrentUrl();
-            assertEquals("http://localhost:3000/", current_url);
+            assertEquals(BASE_URL, current_url);
         }
     }
 }
