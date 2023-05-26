@@ -57,11 +57,33 @@ public class CsiTests {
         }
 
         @Test
-        @DisplayName("Being on create page, clicking on the logo should return to the main page")
-        void beingOnCreatePageClickingOnTheLogoShouldReturnToTheMainPage () {
+        @DisplayName("Being on register page, clicking on the logo should return to the main page")
+        void beingOnRegisterPageClickingOnTheLogoShouldReturnToTheMainPage () {
             driver.get(BASE_URL + "crimes/register");
             final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(By.xpath("//img")));
+            logo.click();
+            final String current_url = driver.getCurrentUrl();
+            assertEquals(BASE_URL, current_url);
+        }
+
+        @Test
+        @DisplayName("Being on crimes page, clicking on the logo present in the footer should return to the main page")
+        void beingOnCrimesPageClickingOnTheLogoPresentInTheFooterShouldReturnToTheMainPage () {
+            driver.get(BASE_URL + "crimes");
+            final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//footer/a/img")));
+            logo.click();
+            final String current_url = driver.getCurrentUrl();
+            assertEquals(BASE_URL, current_url);
+        }
+
+        @Test
+        @DisplayName("Being on register page, clicking on the logo present in the footer should return to the main page")
+        void beingOnRegisterPageClickingOnTheLogoPresentInTheFooterShouldReturnToTheMainPage () {
+            driver.get(BASE_URL + "crimes/register");
+            final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//footer/a/img")));
             logo.click();
             final String current_url = driver.getCurrentUrl();
             assertEquals(BASE_URL, current_url);
