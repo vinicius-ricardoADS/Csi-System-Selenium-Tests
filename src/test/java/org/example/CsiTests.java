@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class CsiTests {
 
+    private static final String BASE_URL = "http://localhost:3000/";
     private WebDriver driver;
 
     @BeforeEach
@@ -37,7 +38,7 @@ public class CsiTests {
     @Test
     @DisplayName("Simple test")
     void simpleTest () throws InterruptedException {
-        driver.get("http://localhost:3000/");
+        driver.get(BASE_URL);
         Thread.sleep(2000);
     }
 
@@ -45,11 +46,9 @@ public class CsiTests {
     @DisplayName ("CRUD")
     class Crud {
         @Test
-        @DisplayName("Being on another page, clicking on the logo should return to the main page")
-        void beingOnAnotherPageClickingOnTheLogoShouldReturnToTheMainPage () throws InterruptedException {
-            driver.get("http://localhost:3000/");
-            final WebElement linkCrimes = driver.findElement(By.xpath("//ul/li[1]/a"));
-            linkCrimes.click();
+        @DisplayName("Being on crimes page, clicking on the logo should return to the main page")
+        void beingOnCrimesPageClickingOnTheLogoShouldReturnToTheMainPage () throws InterruptedException {
+            driver.get(BASE_URL + "crimes");
             final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(By.xpath("//img")));
             logo.click();
