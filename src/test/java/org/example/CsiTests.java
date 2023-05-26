@@ -55,5 +55,16 @@ public class CsiTests {
             final String current_url = driver.getCurrentUrl();
             assertEquals("http://localhost:3000/", current_url);
         }
+
+        @Test
+        @DisplayName("Being on create page, clicking on the logo should return to the main page")
+        void beingOnCreatePageClickingOnTheLogoShouldReturnToTheMainPage () {
+            driver.get(BASE_URL + "crimes/register");
+            final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//img")));
+            logo.click();
+            final String current_url = driver.getCurrentUrl();
+            assertEquals("http://localhost:3000/", current_url);
+        }
     }
 }
