@@ -7,10 +7,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.locators.RelativeLocator;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import javax.swing.*;
 import javax.xml.xpath.XPath;
 
 import java.time.Duration;
@@ -113,6 +115,28 @@ public class CsiTests {
             crimes_link.click();
             final String current_url = driver.getCurrentUrl();
             assertEquals((BASE_URL + "crimes/register"), current_url);
+        }
+        
+        @Test
+        @DisplayName("Click on the link 'Visualizar registros' and go to 'crimes', present in the image on the left when hovering the mouse over it")
+        void clickOnTheLinkCurrentRecordsAndGoToCrimesPresentInTheImageOnTheLeftWhenHoveringTheMouseOverIt () throws InterruptedException {
+            driver.get(BASE_URL);
+            final WebElement element = driver.findElement(By.xpath("//div[@class='d-flex']//div[@class='middle']"));
+            Actions actions = new Actions(driver);
+            actions.moveToElement(element).perform();
+            actions.click().perform();
+            assertEquals((BASE_URL + "crimes"), driver.getCurrentUrl());
+        }
+        
+        @Test
+        @DisplayName("Click on the link 'Cadastrar' and go to 'crimes/register', present in the image on the right when hovering the mouse over it")
+        void clickOnTheLinkCadastrarAndGoToCrimesRegisterPresentInTheImageOnTheRightWhenHoveringTheMouseOverIt () {
+            driver.get(BASE_URL);
+            final WebElement element = driver.findElement(By.xpath("//div[@class='d-flex']//div[2]//div[@class='middle']"));
+            Actions actions = new Actions(driver);
+            actions.moveToElement(element).perform();
+            actions.click().perform();
+            assertEquals((BASE_URL + "crimes/register"), driver.getCurrentUrl());
         }
     }
 }
