@@ -88,5 +88,19 @@ public class CsiTests {
             final String current_url = driver.getCurrentUrl();
             assertEquals(BASE_URL, current_url);
         }
+
+        @Test
+        @DisplayName("Being on home page, clicking on 'Registros Atuais' should lead to crimes page.")
+        void beingOnHomePageClickingOnRegistrosAtuaisShouldLeadToCrimesPage(){
+            driver.get(BASE_URL);
+            final WebElement crimes_link = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.elementToBeClickable(
+                            By.xpath("/html/body/div/header/nav/div/div/ul/li[1]/a"))
+                    );
+
+            crimes_link.click();
+            final String current_url = driver.getCurrentUrl();
+            assertEquals((BASE_URL + "crimes"), current_url);
+        }
     }
 }
