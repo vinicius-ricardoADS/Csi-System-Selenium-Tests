@@ -95,9 +95,8 @@ public class CsiTests {
             driver.get(BASE_URL);
             final WebElement crimes_link = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
-                            By.xpath("/html/body/div/header/nav/div/div/ul/li[1]/a"))
+                            By.xpath("//ul//a"))
                     );
-
             crimes_link.click();
             final String current_url = driver.getCurrentUrl();
             assertEquals((BASE_URL + "crimes"), current_url);
@@ -109,7 +108,7 @@ public class CsiTests {
             driver.get(BASE_URL);
             final WebElement crimes_link = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
-                            By.xpath("/html/body/div/header/nav/div/div/ul/li[2]/a"))
+                            By.xpath("//ul//li[2]/a"))
                     );
             crimes_link.click();
             final String current_url = driver.getCurrentUrl();
