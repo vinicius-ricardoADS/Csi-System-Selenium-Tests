@@ -13,6 +13,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -146,6 +147,27 @@ public class CsiTests {
     @Nested
     @DisplayName ("Testing CRUD")
     class TestingCRUD {
+        @Test
+        @DisplayName("On registering crimes page, the 'limpar' button should clear all input fields")
+        void onRegisterCrimePageLimparButtonShouldClearAllFields() throws InterruptedException {
+            driver.get(BASE_URL + "crimes/register");
 
+            final WebElement suspectInput = driver.findElement(By.xpath("//input[@name='crimeSuspect']"));
+            final WebElement crimeInput = driver.findElement(By.xpath("//input[@name='crimeType']"));
+            final WebElement crimeSceneInput = driver.findElement(By.xpath("//input[@name='crimeLocation']"));
+            final WebElement dateInput = driver.findElement(By.xpath("//input[@name='crimeDate']"));
+            suspectInput.sendKeys("Nome do Suspeito");
+            crimeInput.sendKeys("Tipo de Crime");
+            crimeSceneInput.sendKeys("Cena do Crime");
+            dateInput.sendKeys("02022003165015");
+
+            final WebElement limparBtn = driver.findElement(By.xpath("//input[@type='reset']"));
+            limparBtn.click();
+
+            assertThat(suspectInput.getText()).isEmpty();
+            assertThat(crimeInput.getText()).isEmpty();
+            assertThat(crimeSceneInput.getText()).isEmpty();
+            assertThat(dateInput.getText()).isEmpty();
+        }
     }
 }
