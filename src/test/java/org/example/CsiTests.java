@@ -65,8 +65,7 @@ public class CsiTests {
             final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(By.xpath("//img")));
             logo.click();
-            final String current_url = driver.getCurrentUrl();
-            assertEquals(BASE_URL, current_url);
+            assertEquals(BASE_URL, driver.getCurrentUrl());
         }
 
         @Test
@@ -76,8 +75,7 @@ public class CsiTests {
             final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(By.xpath("//footer/a/img")));
             logo.click();
-            final String current_url = driver.getCurrentUrl();
-            assertEquals(BASE_URL, current_url);
+            assertEquals(BASE_URL, driver.getCurrentUrl());
         }
 
         @Test
@@ -87,34 +85,31 @@ public class CsiTests {
             final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(By.xpath("//footer/a/img")));
             logo.click();
-            final String current_url = driver.getCurrentUrl();
-            assertEquals(BASE_URL, current_url);
+            assertEquals(BASE_URL, driver.getCurrentUrl());            
         }
 
         @Test
         @DisplayName("Being on home page, clicking on 'Registros Atuais' should lead to crimes page.")
         void beingOnHomePageClickingOnRegistrosAtuaisShouldLeadToCrimesPage(){
             driver.get(BASE_URL);
-            final WebElement crimes_link = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+            final WebElement crimesLink = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
                             By.xpath("//ul//a"))
                     );
-            crimes_link.click();
-            final String current_url = driver.getCurrentUrl();
-            assertEquals((BASE_URL + "crimes"), current_url);
+            crimesLink.click();
+            assertEquals((BASE_URL + "crimes"), driver.getCurrentUrl(););
         }
 
         @Test
         @DisplayName("Being on home page, clicking on 'Cadastrar' should lead to crime register page.")
         void beingOnHomePageClickingOnCadastrarShouldLeadToCrimeRegisterPage(){
             driver.get(BASE_URL);
-            final WebElement crimes_link = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+            final WebElement crimesLink = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
                             By.xpath("//ul//li[2]/a"))
                     );
-            crimes_link.click();
-            final String current_url = driver.getCurrentUrl();
-            assertEquals((BASE_URL + "crimes/register"), current_url);
+            crimesLink.click();
+            assertEquals((BASE_URL + "crimes/register"), driver.getCurrentUrl());
         }
         
         @Test
@@ -143,11 +138,11 @@ public class CsiTests {
         @DisplayName("Once on the page to register a crime, clicking on 'Cancelar' should return to '/crimes'")
         void onceOnThePageToRegisterACrimeClickingOnCancelarShouldReturnToCrimes () {
             driver.get(BASE_URL + "crimes/register");
-            final WebElement btn_cancel = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+            final WebElement btnCancel = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
                             By.xpath("//input[@class='btn']"))
                     );
-            btn_cancel.click();
+            btnCancel.click();
             assertEquals((BASE_URL + "crimes"), driver.getCurrentUrl());
         }
     }
