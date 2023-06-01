@@ -138,5 +138,17 @@ public class CsiTests {
             actions.click().perform();
             assertEquals((BASE_URL + "crimes/register"), driver.getCurrentUrl());
         }
+
+        @Test
+        @DisplayName("Once on the page to register a crime, clicking on 'Cancelar' should return to '/crimes'")
+        void onceOnThePageToRegisterACrimeClickingOnCancelarShouldReturnToCrimes () {
+            driver.get(BASE_URL + "crimes/register");
+            final WebElement btn_cancel = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.elementToBeClickable(
+                            By.xpath("//input[@class='btn']"))
+                    );
+            btn_cancel.click();
+            assertEquals((BASE_URL + "crimes"), driver.getCurrentUrl());
+        }
     }
 }
