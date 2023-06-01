@@ -149,7 +149,7 @@ public class CsiTests {
     class TestingCRUD {
         @Test
         @DisplayName("On registering crimes page, the 'limpar' button should clear all input fields")
-        void onRegisterCrimePageLimparButtonShouldClearAllFields() throws InterruptedException {
+        void onRegisterCrimePageLimparButtonShouldClearAllFields(){
             driver.get(BASE_URL + "crimes/register");
 
             final WebElement suspectInput = driver.findElement(By.xpath("//input[@name='crimeSuspect']"));
@@ -168,6 +168,68 @@ public class CsiTests {
             assertThat(crimeInput.getText()).isEmpty();
             assertThat(crimeSceneInput.getText()).isEmpty();
             assertThat(dateInput.getText()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("should be able to alter all values of an existing crime")
+        void shouldBeAbleToEditAllValuesOfExistingCrime() throws InterruptedException {
+            driver.get(BASE_URL);
+
+            final WebElement btnRegistros = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.elementToBeClickable(
+                            By.xpath("//a[@href='/crimes']"))
+                    );
+            btnRegistros.click();
+
+            WebElement linhaCrime = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.presenceOfElementLocated(
+                            By.xpath("/html/body/div/div/div/table/tbody/tr[1]"))
+                    );
+
+            final String nomeSuspeito = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[2]")).getText();
+            final String tipoCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[3]")).getText();
+            final String localCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[4]")).getText();
+            final String dataCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
+
+            System.out.println(nomeSuspeito + " " + tipoCrime + " " + localCrime + " " + dataCrime);
+
+            final WebElement btnEditar = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[6]/div/button[1]"));
+
+            btnEditar.click();
+
+            final WebElement suspectInput = driver.findElement(By.xpath("//input[@name='crimeSuspect']"));
+            final WebElement crimeInput = driver.findElement(By.xpath("//input[@name='crimeType']"));
+            final WebElement crimeSceneInput = driver.findElement(By.xpath("//input[@name='crimeLocation']"));
+            final WebElement dateInput = driver.findElement(By.xpath("//input[@name='crimeDate']"));
+
+            suspectInput.clear();
+            crimeInput.clear();
+            crimeSceneInput.clear();
+            dateInput.clear();
+
+            Thread.sleep(2000);
+
+            suspectInput.sendKeys("Nome do Suspeito");
+            crimeInput.sendKeys("Tipo de Crime");
+            crimeSceneInput.sendKeys("Cena do Crime");
+            dateInput.sendKeys("02022003165015");
+
+            driver.findElement(By.xpath("/html/body/div/div/div/form/div[5]/input[2]")).click();
+
+            linhaCrime = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.presenceOfElementLocated(
+                            By.xpath("/html/body/div/div/div/table/tbody/tr[1]"))
+                    );
+
+            final String novoNomeSuspeito = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[2]")).getText();
+            final String novoTipoCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[3]")).getText();
+            final String novoLocalCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[4]")).getText();
+            final String novoDataCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
+
+            assertThat(nomeSuspeito).isNotEqualTo(novoNomeSuspeito);
+            assertThat(tipoCrime).isNotEqualTo(novoTipoCrime);
+            assertThat(localCrime).isNotEqualTo(novoLocalCrime);
+            assertThat(dataCrime).isNotEqualTo(novoDataCrime);
         }
     }
 }
