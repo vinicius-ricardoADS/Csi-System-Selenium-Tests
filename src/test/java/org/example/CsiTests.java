@@ -10,8 +10,11 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import static org.assertj.core.api.Assertions.*;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -146,6 +149,23 @@ public class CsiTests {
     @Nested
     @DisplayName ("Testing CRUD")
     class TestingCRUD {
-
+        @Test
+        @DisplayName("Should remove crime clicking on button 'Excluir'")
+        void shouldRemoveCrimeClickingOnButtonExcluir () throws InterruptedException {
+            driver.get(BASE_URL + "crimes");
+            final WebElement tbodyInitial = driver.findElement(By.tagName("tbody"));
+            final List<WebElement> trInitial = tbodyInitial.findElements(By.tagName("tr"));
+            final WebElement btnExcluir = new WebDriverWait(driver, Duration.ofSeconds(10))
+                    .until(ExpectedConditions.elementToBeClickable(
+                            By.xpath("//button[2]")
+                    ));
+            btnExcluir.click();
+            final WebElement tbodyRefresh = new WebDriverWait(driver, Duration.ofSeconds(10))
+                    .until(ExpectedConditions.refreshed(ExpectedConditions.presenceOfElementLocated(
+                            By.tagName("tbody")
+                    )));
+            final List<WebElement> trModified = tbodyRefresh.findElements(By.tagName("tr"));
+            assertThat(trModified.size()).isLessThan(trInitial.size());
+        }
     }
 }
