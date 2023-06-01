@@ -1,8 +1,10 @@
 package org.example;
 
+import com.github.javafaker.Faker;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -12,9 +14,14 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class CsiTests {
 
@@ -146,6 +153,50 @@ public class CsiTests {
     @Nested
     @DisplayName ("Testing CRUD")
     class TestingCRUD {
+        @Test
+        @DisplayName("Create crime using the form in page register")
+        void createCrimeUsingTheFormInPageRegister() {
+            Faker faker = new Faker();
 
+            driver.get(BASE_URL + "crimes/register");
+            final WebElement btnCancel = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.elementToBeClickable(
+                            By.xpath("//input[@class='btn']"))
+                    );
+
+            final var inputElements = driver.findElements(By.cssSelector(".form-control"));
+
+            final var crimeSuspectElement = inputElements.get(0);
+            final var crimeTypeElement = inputElements.get(1);
+            final var crimeLocationElement = inputElements.get(2);
+            final var crimeDateElement = inputElements.get(3);
+
+            assertThat(crimeSuspectElement.getAttribute("name")).isEqualTo("crimeSuspect");
+            assertThat(crimeTypeElement.getAttribute("name")).isEqualTo("crimeType");
+            assertThat(crimeLocationElement.getAttribute("name")).isEqualTo("crimeLocation");
+            assertThat(crimeDateElement.getAttribute("name")).isEqualTo("crimeDate");
+
+            final var fullName = faker.name().fullName();
+            final var crimeType = faker.rickAndMorty().quote();
+            final var crimeLocation = faker.address().streetAddress();
+
+            final var crimeDate = LocalDateTime.now();
+            System.out.println(crimeDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm")));
+
+            crimeSuspectElement.sendKeys(fullName);
+            crimeTypeElement.sendKeys(crimeType);
+            crimeLocationElement.sendKeys(crimeLocation);
+
+            crimeDateElement.sendKeys("02122002");
+            crimeDateElement.sendKeys(Keys.TAB);
+            crimeDateElement.sendKeys("2222");
+
+            assertThat(crimeSuspectElement.getAttribute("value")).isEqualTo(fullName);
+            assertThat(crimeTypeElement.getAttribute("value")).isEqualTo(crimeType);
+            assertThat(crimeLocationElement.getAttribute("value")).isEqualTo(crimeLocation);
+            assertThat(crimeDateElement.getAttribute("value")).isEqualTo(crimeDate);
+
+
+        }
     }
 }
