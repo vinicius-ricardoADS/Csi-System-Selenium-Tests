@@ -45,8 +45,8 @@ public class CsiTests {
     }
 
     @Nested
-    @DisplayName ("CRUD")
-    class Crud {
+    @DisplayName ("Requests GET")
+    class RequestsGet {
         @Test
         @DisplayName("Being on crimes page, clicking on the logo should return to the main page")
         void beingOnCrimesPageClickingOnTheLogoShouldReturnToTheMainPage () throws InterruptedException {
