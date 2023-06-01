@@ -8,12 +8,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.locators.RelativeLocator;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import javax.swing.*;
-import javax.xml.xpath.XPath;
 
 import java.time.Duration;
 
@@ -97,7 +93,7 @@ public class CsiTests {
                             By.xpath("//ul//a"))
                     );
             crimesLink.click();
-            assertEquals((BASE_URL + "crimes"), driver.getCurrentUrl(););
+            assertEquals((BASE_URL + "crimes"), driver.getCurrentUrl());
         }
 
         @Test
@@ -145,5 +141,11 @@ public class CsiTests {
             btnCancel.click();
             assertEquals((BASE_URL + "crimes"), driver.getCurrentUrl());
         }
+    }
+
+    @Nested
+    @DisplayName ("Testing Form")
+    class TestingForm {
+
     }
 }
