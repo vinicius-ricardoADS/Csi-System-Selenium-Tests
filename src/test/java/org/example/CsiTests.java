@@ -3,10 +3,7 @@ package org.example;
 import com.github.javafaker.Faker;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
@@ -17,6 +14,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -155,7 +153,7 @@ public class CsiTests {
     class TestingCRUD {
         @Test
         @DisplayName("Create crime using the form in page register")
-        void createCrimeUsingTheFormInPageRegister() {
+        void createCrimeUsingTheFormInPageRegister() throws InterruptedException {
             Faker faker = new Faker();
 
             driver.get(BASE_URL + "crimes/register");
@@ -176,27 +174,40 @@ public class CsiTests {
             assertThat(crimeLocationElement.getAttribute("name")).isEqualTo("crimeLocation");
             assertThat(crimeDateElement.getAttribute("name")).isEqualTo("crimeDate");
 
+            final var sendButton = driver.findElement(By.xpath("//input[@class='btn'][@type='submit']"));
+
             final var fullName = faker.name().fullName();
             final var crimeType = faker.rickAndMorty().quote();
             final var crimeLocation = faker.address().streetAddress();
 
-            final var crimeDate = LocalDateTime.now();
-            System.out.println(crimeDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm")));
+            final var crimeDate = LocalDateTime.now().minusDays(5);
+
+            final var crimeDateCalendar = crimeDate.format(DateTimeFormatter.ofPattern("ddMMyyyy"));
+            final var crimeDateTime = crimeDate.format(DateTimeFormatter.ofPattern("hhmmss"));
+            final var crimeDatePeriod = crimeDate.format(DateTimeFormatter.ofPattern("a")).substring(0, 1).toLowerCase();
 
             crimeSuspectElement.sendKeys(fullName);
             crimeTypeElement.sendKeys(crimeType);
             crimeLocationElement.sendKeys(crimeLocation);
 
-            crimeDateElement.sendKeys("02122002");
+            crimeDateElement.sendKeys(crimeDateCalendar);
             crimeDateElement.sendKeys(Keys.TAB);
-            crimeDateElement.sendKeys("2222");
+
+            crimeDateElement.sendKeys(crimeDateTime);
+
+//             Infelizmente o datetime-local não funciona bem com o Selenium, então é necessário
+            Thread.sleep(1000);
+            crimeDateElement.sendKeys(crimeDatePeriod);
 
             assertThat(crimeSuspectElement.getAttribute("value")).isEqualTo(fullName);
             assertThat(crimeTypeElement.getAttribute("value")).isEqualTo(crimeType);
             assertThat(crimeLocationElement.getAttribute("value")).isEqualTo(crimeLocation);
-            assertThat(crimeDateElement.getAttribute("value")).isEqualTo(crimeDate);
+            assertThat(crimeDateElement.getAttribute("value")).isEqualTo(crimeDate.format(DateTimeFormatter.ofPattern("yyyy-dd-MM'T'HH:mm")));
 
+            sendButton.click();
 
+            final var webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            webDriverWait.until(ExpectedConditions.urlToBe(BASE_URL + "crimes"));
         }
     }
 }
