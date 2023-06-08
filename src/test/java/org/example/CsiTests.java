@@ -1,10 +1,9 @@
 package org.example;
 
+import com.github.javafaker.Faker;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
@@ -13,11 +12,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class CsiTests {
 
@@ -69,10 +68,16 @@ public class CsiTests {
 
         @Test
         @DisplayName("Being on crimes page, clicking on the logo present in the footer should return to the main page")
-        void beingOnCrimesPageClickingOnTheLogoPresentInTheFooterShouldReturnToTheMainPage () {
+        void beingOnCrimesPageClickingOnTheLogoPresentInTheFooterShouldReturnToTheMainPage () throws InterruptedException {
             driver.get(BASE_URL + "crimes");
             final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
-                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//footer/a/img")));
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//footer//a[@href='/']")));
+
+            final var finalLogo = driver.findElement(By.xpath("//footer"));
+
+            var actions = new Actions(driver).scrollByAmount(0, ((Long) ((JavascriptExecutor)driver).executeScript("return document.body.scrollHeight")).intValue());
+
+            actions.perform();
             logo.click();
             assertEquals(BASE_URL, driver.getCurrentUrl());
         }
@@ -166,6 +171,63 @@ public class CsiTests {
                     )));
             final List<WebElement> trModified = tbodyRefresh.findElements(By.tagName("tr"));
             assertThat(trModified.size()).isLessThan(trInitial.size());
+        }
+        @DisplayName("Create crime using the form in page register")
+        void createCrimeUsingTheFormInPageRegister() throws InterruptedException {
+            Faker faker = new Faker();
+
+            driver.get(BASE_URL + "crimes/register");
+            final WebElement btnCancel = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.elementToBeClickable(
+                            By.xpath("//input[@class='btn']"))
+                    );
+
+            final var inputElements = driver.findElements(By.cssSelector(".form-control"));
+
+            final var crimeSuspectElement = inputElements.get(0);
+            final var crimeTypeElement = inputElements.get(1);
+            final var crimeLocationElement = inputElements.get(2);
+            final var crimeDateElement = inputElements.get(3);
+
+            assertThat(crimeSuspectElement.getAttribute("name")).isEqualTo("crimeSuspect");
+            assertThat(crimeTypeElement.getAttribute("name")).isEqualTo("crimeType");
+            assertThat(crimeLocationElement.getAttribute("name")).isEqualTo("crimeLocation");
+            assertThat(crimeDateElement.getAttribute("name")).isEqualTo("crimeDate");
+
+            final var sendButton = driver.findElement(By.xpath("//input[@class='btn'][@type='submit']"));
+
+            final var fullName = faker.name().fullName();
+            final var crimeType = faker.rickAndMorty().quote();
+            final var crimeLocation = faker.address().streetAddress();
+
+            final var crimeDate = LocalDateTime.now().minusDays(5);
+
+            final var crimeDateCalendar = crimeDate.format(DateTimeFormatter.ofPattern("ddMMyyyy"));
+            final var crimeDateTime = crimeDate.format(DateTimeFormatter.ofPattern("hhmmss"));
+            final var crimeDatePeriod = crimeDate.format(DateTimeFormatter.ofPattern("a")).substring(0, 1).toLowerCase();
+
+            crimeSuspectElement.sendKeys(fullName);
+            crimeTypeElement.sendKeys(crimeType);
+            crimeLocationElement.sendKeys(crimeLocation);
+
+            crimeDateElement.sendKeys(crimeDateCalendar);
+            crimeDateElement.sendKeys(Keys.TAB);
+
+            crimeDateElement.sendKeys(crimeDateTime);
+
+//             Infelizmente o datetime-local não funciona bem com o Selenium, então é necessário
+            Thread.sleep(1000);
+            crimeDateElement.sendKeys(crimeDatePeriod);
+
+            assertThat(crimeSuspectElement.getAttribute("value")).isEqualTo(fullName);
+            assertThat(crimeTypeElement.getAttribute("value")).isEqualTo(crimeType);
+            assertThat(crimeLocationElement.getAttribute("value")).isEqualTo(crimeLocation);
+            assertThat(crimeDateElement.getAttribute("value")).isEqualTo(crimeDate.format(DateTimeFormatter.ofPattern("yyyy-dd-MM'T'HH:mm")));
+
+            sendButton.click();
+
+            final var webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            webDriverWait.until(ExpectedConditions.urlToBe(BASE_URL + "crimes"));
         }
     }
 }
