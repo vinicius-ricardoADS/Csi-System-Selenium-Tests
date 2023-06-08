@@ -204,7 +204,7 @@ public class CsiTests {
 
             final var crimeDate = LocalDateTime.now().minusDays(5);
 
-            final var crimeDateCalendar = crimeDate.format(DateTimeFormatter.ofPattern("ddMMyyyy"));
+            final var crimeDateCalendar = crimeDate.format(DateTimeFormatter.ofPattern("MMddyyyy"));
             final var crimeDateTime = crimeDate.format(DateTimeFormatter.ofPattern("HHmm"));
 
             crimeSuspectElement.sendKeys(fullName);
