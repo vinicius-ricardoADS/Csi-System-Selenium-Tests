@@ -172,6 +172,8 @@ public class CsiTests {
             final List<WebElement> trModified = tbodyRefresh.findElements(By.tagName("tr"));
             assertThat(trModified.size()).isLessThan(trInitial.size());
         }
+
+        @Test
         @DisplayName("Create crime using the form in page register")
         void createCrimeUsingTheFormInPageRegister() throws InterruptedException {
             Faker faker = new Faker();
@@ -203,7 +205,7 @@ public class CsiTests {
             final var crimeDate = LocalDateTime.now().minusDays(5);
 
             final var crimeDateCalendar = crimeDate.format(DateTimeFormatter.ofPattern("ddMMyyyy"));
-            final var crimeDateTime = crimeDate.format(DateTimeFormatter.ofPattern("hhmm"));
+            final var crimeDateTime = crimeDate.format(DateTimeFormatter.ofPattern("HHmm"));
 
             crimeSuspectElement.sendKeys(fullName);
             crimeTypeElement.sendKeys(crimeType);
