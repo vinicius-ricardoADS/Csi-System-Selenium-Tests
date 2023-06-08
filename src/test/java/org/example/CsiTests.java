@@ -71,10 +71,16 @@ public class CsiTests {
 
         @Test
         @DisplayName("Being on crimes page, clicking on the logo present in the footer should return to the main page")
-        void beingOnCrimesPageClickingOnTheLogoPresentInTheFooterShouldReturnToTheMainPage () {
+        void beingOnCrimesPageClickingOnTheLogoPresentInTheFooterShouldReturnToTheMainPage () throws InterruptedException {
             driver.get(BASE_URL + "crimes");
             final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
-                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//footer/a/img")));
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//footer//a[@href='/']")));
+
+            final var finalLogo = driver.findElement(By.xpath("//footer"));
+
+            var actions = new Actions(driver).scrollByAmount(0, ((Long) ((JavascriptExecutor)driver).executeScript("return document.body.scrollHeight")).intValue());
+
+            actions.perform();
             logo.click();
             assertEquals(BASE_URL, driver.getCurrentUrl());
         }
