@@ -189,8 +189,7 @@ public class CsiTests {
             final var crimeDate = LocalDateTime.now().minusDays(5);
 
             final var crimeDateCalendar = crimeDate.format(DateTimeFormatter.ofPattern("ddMMyyyy"));
-            final var crimeDateTime = crimeDate.format(DateTimeFormatter.ofPattern("hhmmss"));
-            final var crimeDatePeriod = crimeDate.format(DateTimeFormatter.ofPattern("a")).substring(0, 1).toLowerCase();
+            final var crimeDateTime = crimeDate.format(DateTimeFormatter.ofPattern("hhmm"));
 
             crimeSuspectElement.sendKeys(fullName);
             crimeTypeElement.sendKeys(crimeType);
@@ -200,10 +199,6 @@ public class CsiTests {
             crimeDateElement.sendKeys(Keys.TAB);
 
             crimeDateElement.sendKeys(crimeDateTime);
-
-//             Infelizmente o datetime-local não funciona bem com o Selenium, então é necessário
-            Thread.sleep(1000);
-            crimeDateElement.sendKeys(crimeDatePeriod);
 
             assertThat(crimeSuspectElement.getAttribute("value")).isEqualTo(fullName);
             assertThat(crimeTypeElement.getAttribute("value")).isEqualTo(crimeType);
