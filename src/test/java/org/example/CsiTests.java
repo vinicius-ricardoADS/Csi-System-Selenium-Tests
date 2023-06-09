@@ -226,5 +226,117 @@ public class CsiTests {
             final var webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
             webDriverWait.until(ExpectedConditions.urlToBe(BASE_URL + "crimes"));
         }
+
+        @Test
+        @DisplayName("should be able to alter all values of an existing crime")
+        void shouldBeAbleToEditAllValuesOfExistingCrime() throws InterruptedException {
+            driver.get(BASE_URL);
+
+            final WebElement btnRegistros = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.elementToBeClickable(
+                            By.xpath("//a[@href='/crimes']"))
+                    );
+            btnRegistros.click();
+
+            WebElement linhaCrime = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.presenceOfElementLocated(
+                            By.xpath("/html/body/div/div/div/table/tbody/tr[1]"))
+                    );
+
+            final String nomeSuspeito = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[2]")).getText();
+            final String tipoCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[3]")).getText();
+            final String localCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[4]")).getText();
+            final String dataCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
+
+            final WebElement btnEditar = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[6]/div/button[1]"));
+
+            btnEditar.click();
+
+            final WebElement suspectInput = driver.findElement(By.xpath("//input[@name='crimeSuspect']"));
+            final WebElement crimeInput = driver.findElement(By.xpath("//input[@name='crimeType']"));
+            final WebElement crimeSceneInput = driver.findElement(By.xpath("//input[@name='crimeLocation']"));
+            final WebElement dateInput = driver.findElement(By.xpath("//input[@name='crimeDate']"));
+
+            suspectInput.clear();
+            crimeInput.clear();
+            crimeSceneInput.clear();
+            dateInput.clear();
+
+            Thread.sleep(2000);
+
+            suspectInput.sendKeys(Keys.chord(Keys.CONTROL, "a"), "Ladrão");
+            crimeInput.sendKeys(Keys.chord(Keys.CONTROL, "a"), "Furto");
+            crimeSceneInput.sendKeys(Keys.chord(Keys.CONTROL, "a"), "Centro");
+            dateInput.sendKeys("1405");
+            dateInput.sendKeys(Keys.chord(Keys.TAB));
+            dateInput.sendKeys("2003");
+            dateInput.sendKeys(Keys.chord(Keys.TAB));
+            dateInput.sendKeys("15");
+            dateInput.sendKeys(Keys.chord(Keys.TAB));
+            dateInput.sendKeys("30");
+            dateInput.sendKeys(Keys.chord(Keys.TAB));
+            dateInput.sendKeys("p");
+
+            Thread.sleep(2000);
+
+            driver.findElement(By.xpath("/html/body/div/div/div/form/div[5]/input[2]")).click();
+
+            linhaCrime = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.presenceOfElementLocated(
+                            By.xpath("/html/body/div/div/div/table/tbody/tr[1]"))
+                    );
+
+            final String novoNomeSuspeito = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[2]")).getText();
+            final String novoTipoCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[3]")).getText();
+            final String novoLocalCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[4]")).getText();
+            final String novoDataCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
+
+            assertThat(nomeSuspeito).isNotEqualTo(novoNomeSuspeito);
+            assertThat(tipoCrime).isNotEqualTo(novoTipoCrime);
+            assertThat(localCrime).isNotEqualTo(novoLocalCrime);
+            assertThat(dataCrime).isNotEqualTo(novoDataCrime);
+        }
+
+        @Test
+        @DisplayName("Should not edit if date picked is further than today")
+        void shouldNotEditIfDateSelectedIsFutherThanToday() throws InterruptedException {
+            driver.get(BASE_URL);
+
+            final WebElement btnRegistros = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.elementToBeClickable(
+                            By.xpath("//a[@href='/crimes']"))
+                    );
+            btnRegistros.click();
+
+            WebElement linhaCrime = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.presenceOfElementLocated(
+                            By.xpath("/html/body/div/div/div/table/tbody/tr[1]"))
+                    );
+
+            final String dataCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
+
+            final WebElement btnEditar = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[6]/div/button[1]"));
+
+            btnEditar.click();
+
+            final WebElement dateInput = driver.findElement(By.xpath("//input[@name='crimeDate']"));
+
+            Thread.sleep(2000);
+
+            dateInput.sendKeys("2206");
+            dateInput.sendKeys("2030");
+
+            Thread.sleep(5000);
+
+            final WebElement warning = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.presenceOfElementLocated(
+                            By.xpath("/html/body/div/div/div/form/div[4]/div[2]/p"))
+                    );
+
+            driver.findElement(By.xpath("/html/body/div/div/div/form/div[5]/input[2]")).click();
+
+            assertThat(warning).isNotNull();
+            assertThat(driver.getCurrentUrl()).isNotEqualTo(BASE_URL + "crimes");
+        }
     }
 }
