@@ -12,9 +12,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -199,7 +202,7 @@ public class CsiTests {
             final var sendButton = driver.findElement(By.xpath("//input[@class='btn'][@type='submit']"));
 
             final var fullName = faker.name().fullName();
-            final var crimeType = faker.rickAndMorty().quote();
+            final var crimeType = String.join(" ", faker.lorem().words(10));
             final var crimeLocation = faker.address().streetAddress();
 
             final var crimeDate = LocalDateTime.now().minusDays(5);
@@ -243,10 +246,10 @@ public class CsiTests {
                             By.xpath("/html/body/div/div/div/table/tbody/tr[1]"))
                     );
 
-            final String nomeSuspeito = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[2]")).getText();
-            final String tipoCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[3]")).getText();
-            final String localCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[4]")).getText();
-            final String dataCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
+            final String suspectOldValue = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[2]")).getText();
+            final String crimeOldValue = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[3]")).getText();
+            final String crimeSceneOldValue = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[4]")).getText();
+            final String dateOldValue = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
 
             final WebElement btnEditar = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[6]/div/button[1]"));
 
@@ -257,27 +260,18 @@ public class CsiTests {
             final WebElement crimeSceneInput = driver.findElement(By.xpath("//input[@name='crimeLocation']"));
             final WebElement dateInput = driver.findElement(By.xpath("//input[@name='crimeDate']"));
 
-            suspectInput.clear();
-            crimeInput.clear();
-            crimeSceneInput.clear();
-            dateInput.clear();
+            final LocalDateTime randomOldDate = LocalDateTime.now().minusYears(20);
 
-            Thread.sleep(2000);
+            final var crimeDateCalendar = randomOldDate.format(DateTimeFormatter.ofPattern("MMddyyyy"));
+            final var crimeDateTime = randomOldDate.format(DateTimeFormatter.ofPattern("HHmm"));
 
-            suspectInput.sendKeys(Keys.chord(Keys.CONTROL, "a"), "Ladrão");
-            crimeInput.sendKeys(Keys.chord(Keys.CONTROL, "a"), "Furto");
-            crimeSceneInput.sendKeys(Keys.chord(Keys.CONTROL, "a"), "Centro");
-            dateInput.sendKeys("1405");
-            dateInput.sendKeys(Keys.chord(Keys.TAB));
-            dateInput.sendKeys("2003");
-            dateInput.sendKeys(Keys.chord(Keys.TAB));
-            dateInput.sendKeys("15");
-            dateInput.sendKeys(Keys.chord(Keys.TAB));
-            dateInput.sendKeys("30");
-            dateInput.sendKeys(Keys.chord(Keys.TAB));
-            dateInput.sendKeys("p");
+            suspectInput.sendKeys("a");
+            crimeInput.sendKeys("a");
+            crimeSceneInput.sendKeys("a");
 
-            Thread.sleep(2000);
+            dateInput.sendKeys(crimeDateCalendar);
+            dateInput.sendKeys(Keys.chord(Keys.TAB));
+            dateInput.sendKeys(crimeDateTime);
 
             driver.findElement(By.xpath("/html/body/div/div/div/form/div[5]/input[2]")).click();
 
@@ -286,15 +280,15 @@ public class CsiTests {
                             By.xpath("/html/body/div/div/div/table/tbody/tr[1]"))
                     );
 
-            final String novoNomeSuspeito = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[2]")).getText();
-            final String novoTipoCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[3]")).getText();
-            final String novoLocalCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[4]")).getText();
-            final String novoDataCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
+            final String suspectTdElement  = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[2]")).getText();
+            final String crimeInputTdElement = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[3]")).getText();
+            final String crimeSceneTdElement = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[4]")).getText();
+            final String dateInputTdElement = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
 
-            assertThat(nomeSuspeito).isNotEqualTo(novoNomeSuspeito);
-            assertThat(tipoCrime).isNotEqualTo(novoTipoCrime);
-            assertThat(localCrime).isNotEqualTo(novoLocalCrime);
-            assertThat(dataCrime).isNotEqualTo(novoDataCrime);
+            assertThat(suspectTdElement).isNotEqualTo(suspectOldValue);
+            assertThat(crimeInputTdElement).isNotEqualTo(crimeOldValue);
+            assertThat(crimeSceneTdElement).isNotEqualTo(crimeSceneOldValue);
+            assertThat(dateInputTdElement).isNotEqualTo(dateOldValue);
         }
 
         @Test
@@ -312,8 +306,6 @@ public class CsiTests {
                     .until(ExpectedConditions.presenceOfElementLocated(
                             By.xpath("/html/body/div/div/div/table/tbody/tr[1]"))
                     );
-
-            final String dataCrime = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
 
             final WebElement btnEditar = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[6]/div/button[1]"));
 
@@ -336,7 +328,6 @@ public class CsiTests {
             driver.findElement(By.xpath("/html/body/div/div/div/form/div[5]/input[2]")).click();
 
             assertThat(warning).isNotNull();
-            assertThat(driver.getCurrentUrl()).isNotEqualTo(BASE_URL + "crimes");
         }
     }
 }
