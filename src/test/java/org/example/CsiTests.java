@@ -13,6 +13,8 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.List;
 import java.time.LocalDateTime;
@@ -25,9 +27,12 @@ public class CsiTests {
 
     private static final String BASE_URL = "http://localhost:3000/";
     private WebDriver driver;
+    private Faker faker;
 
     @BeforeEach
     void setUp(){
+        faker = new Faker();
+
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-allow-origins=*");
@@ -36,13 +41,6 @@ public class CsiTests {
     @AfterEach
     void tearDown(){
         driver.quit();
-    }
-
-    @Test
-    @DisplayName("Simple test")
-    void simpleTest () throws InterruptedException {
-        driver.get(BASE_URL);
-        Thread.sleep(2000);
     }
 
     @Nested
@@ -75,8 +73,6 @@ public class CsiTests {
             driver.get(BASE_URL + "crimes");
             final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(By.xpath("//footer//a[@href='/']")));
-
-            final var finalLogo = driver.findElement(By.xpath("//footer"));
 
             var actions = new Actions(driver).scrollByAmount(0, ((Long) ((JavascriptExecutor)driver).executeScript("return document.body.scrollHeight")).intValue());
 
@@ -159,15 +155,15 @@ public class CsiTests {
     class TestingCRUD {
         @Test
         @DisplayName("Should remove crime clicking on button 'Excluir'")
-        void shouldRemoveCrimeClickingOnButtonExcluir () throws InterruptedException {
+        void shouldRemoveCrimeClickingOnButtonExcluir () {
             driver.get(BASE_URL + "crimes");
             final WebElement tbodyInitial = driver.findElement(By.tagName("tbody"));
             final List<WebElement> trInitial = tbodyInitial.findElements(By.tagName("tr"));
-            final WebElement btnExcluir = new WebDriverWait(driver, Duration.ofSeconds(10))
+            final WebElement btnDelete = new WebDriverWait(driver, Duration.ofSeconds(10))
                     .until(ExpectedConditions.elementToBeClickable(
                             By.xpath("//button[2]")
                     ));
-            btnExcluir.click();
+            btnDelete.click();
             final WebElement tbodyRefresh = new WebDriverWait(driver, Duration.ofSeconds(10))
                     .until(ExpectedConditions.refreshed(ExpectedConditions.presenceOfElementLocated(
                             By.tagName("tbody")
@@ -179,10 +175,8 @@ public class CsiTests {
         @Test
         @DisplayName("Create crime using the form in page register")
         void createCrimeUsingTheFormInPageRegister() throws InterruptedException {
-            Faker faker = new Faker();
-
             driver.get(BASE_URL + "crimes/register");
-            final WebElement btnCancel = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+            new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
                             By.xpath("//input[@class='btn']"))
                     );
@@ -235,25 +229,25 @@ public class CsiTests {
         void shouldBeAbleToEditAllValuesOfExistingCrime() throws InterruptedException {
             driver.get(BASE_URL);
 
-            final WebElement btnRegistros = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+            final WebElement buttonRegister = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
                             By.xpath("//a[@href='/crimes']"))
                     );
-            btnRegistros.click();
+            buttonRegister.click();
 
-            WebElement linhaCrime = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+            WebElement rowCrime = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.presenceOfElementLocated(
                             By.xpath("/html/body/div/div/div/table/tbody/tr[1]"))
                     );
 
-            final String suspectOldValue = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[2]")).getText();
-            final String crimeOldValue = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[3]")).getText();
-            final String crimeSceneOldValue = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[4]")).getText();
-            final String dateOldValue = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
+            final String suspectOldValue = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[2]")).getText();
+            final String crimeOldValue = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[3]")).getText();
+            final String crimeSceneOldValue = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[4]")).getText();
+            final String dateOldValue = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
 
-            final WebElement btnEditar = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[6]/div/button[1]"));
+            final WebElement buttonEdit = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[6]/div/button[1]"));
 
-            btnEditar.click();
+            buttonEdit.click();
 
             final WebElement suspectInput = driver.findElement(By.xpath("//input[@name='crimeSuspect']"));
             final WebElement crimeInput = driver.findElement(By.xpath("//input[@name='crimeType']"));
@@ -275,15 +269,15 @@ public class CsiTests {
 
             driver.findElement(By.xpath("/html/body/div/div/div/form/div[5]/input[2]")).click();
 
-            linhaCrime = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+            rowCrime = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.presenceOfElementLocated(
                             By.xpath("/html/body/div/div/div/table/tbody/tr[1]"))
                     );
 
-            final String suspectTdElement  = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[2]")).getText();
-            final String crimeInputTdElement = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[3]")).getText();
-            final String crimeSceneTdElement = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[4]")).getText();
-            final String dateInputTdElement = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
+            final String suspectTdElement  = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[2]")).getText();
+            final String crimeInputTdElement = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[3]")).getText();
+            final String crimeSceneTdElement = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[4]")).getText();
+            final String dateInputTdElement = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
 
             assertThat(suspectTdElement).isNotEqualTo(suspectOldValue);
             assertThat(crimeInputTdElement).isNotEqualTo(crimeOldValue);
@@ -296,29 +290,27 @@ public class CsiTests {
         void shouldNotEditIfDateSelectedIsFutherThanToday() throws InterruptedException {
             driver.get(BASE_URL);
 
-            final WebElement btnRegistros = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+            final WebElement buttonRegister = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
                             By.xpath("//a[@href='/crimes']"))
                     );
-            btnRegistros.click();
+            buttonRegister.click();
 
-            WebElement linhaCrime = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+            WebElement rowCrime = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.presenceOfElementLocated(
                             By.xpath("/html/body/div/div/div/table/tbody/tr[1]"))
                     );
 
-            final WebElement btnEditar = linhaCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[6]/div/button[1]"));
+            final var buttonEdit = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[6]/div/button[1]"));
 
-            btnEditar.click();
+            buttonEdit.click();
 
             final WebElement dateInput = driver.findElement(By.xpath("//input[@name='crimeDate']"));
 
-            Thread.sleep(2000);
+            final var futureDate = LocalDate.now().plus(5, ChronoUnit.YEARS);
+            final var crimeDateCalendar = futureDate.format(DateTimeFormatter.ofPattern("MMddyyyy"));
 
-            dateInput.sendKeys("2206");
-            dateInput.sendKeys("2030");
-
-            Thread.sleep(5000);
+            dateInput.sendKeys(crimeDateCalendar);
 
             final WebElement warning = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.presenceOfElementLocated(
