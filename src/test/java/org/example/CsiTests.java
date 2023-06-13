@@ -173,8 +173,8 @@ public class CsiTests {
         }
 
         @Test
-        @DisplayName("Create crime using the form in page register")
-        void createCrimeUsingTheFormInPageRegister() throws InterruptedException {
+        @DisplayName("Should create crime using the form in page register")
+        void shouldCreateCrimeUsingTheFormInPageRegister() {
             driver.get(BASE_URL + "crimes/register");
             new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
@@ -225,8 +225,38 @@ public class CsiTests {
         }
 
         @Test
+        @DisplayName("Should not create crime due to empty form")
+        void shouldNotCreateCrimeDueToEmptyForm() throws InterruptedException {
+            driver.get(BASE_URL + "crimes/register");
+            new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
+                    .until(ExpectedConditions.elementToBeClickable(
+                            By.xpath("//input[@class='btn']"))
+                    );
+
+            final var inputElements = driver.findElements(By.cssSelector(".form-control"));
+
+            final var crimeSuspectElement = inputElements.get(0);
+            final var crimeTypeElement = inputElements.get(1);
+            final var crimeLocationElement = inputElements.get(2);
+            final var crimeDateElement = inputElements.get(3);
+
+            assertThat(crimeSuspectElement.getAttribute("name")).isEqualTo("crimeSuspect");
+            assertThat(crimeTypeElement.getAttribute("name")).isEqualTo("crimeType");
+            assertThat(crimeLocationElement.getAttribute("name")).isEqualTo("crimeLocation");
+            assertThat(crimeDateElement.getAttribute("name")).isEqualTo("crimeDate");
+
+            final var sendButton = driver.findElement(By.xpath("//input[@class='btn'][@type='submit']"));
+
+            sendButton.click();
+
+            final var warningElements = driver.findElements(By.cssSelector(".text-danger"));
+            final var EXACT_NUMBER_OF_WARNINGS = 4;
+            assertThat(warningElements.size()).isEqualTo(EXACT_NUMBER_OF_WARNINGS);
+        }
+
+        @Test
         @DisplayName("should be able to alter all values of an existing crime")
-        void shouldBeAbleToEditAllValuesOfExistingCrime() throws InterruptedException {
+        void shouldBeAbleToEditAllValuesOfExistingCrime() {
             driver.get(BASE_URL);
 
             final WebElement buttonRegister = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
@@ -287,7 +317,7 @@ public class CsiTests {
 
         @Test
         @DisplayName("Should not edit if date picked is further than today")
-        void shouldNotEditIfDateSelectedIsFutherThanToday() throws InterruptedException {
+        void shouldNotEditIfDateSelectedIsFutherThanToday() {
             driver.get(BASE_URL);
 
             final WebElement buttonRegister = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
