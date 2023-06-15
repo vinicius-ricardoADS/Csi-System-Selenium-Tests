@@ -193,9 +193,7 @@ public class CsiTests {
             final var crimeType = String.join(" ", faker.lorem().words(10));
             final var crimeLocation = faker.address().streetAddress();
 
-            final var crimeDate = LocalDateTime.now().minusDays(5);
-
-            final var crimeDateCalendar = crimeDate.format(DateTimeFormatter.ofPattern("MMddyyyy"));
+            final var crimeDateCalendar = "02022002";
             final var crimeDateTime = "11111";
 
             crimeSuspectElement.sendKeys(fullName);
