@@ -50,8 +50,7 @@ public class CsiTests {
             final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(By.xpath("//img")));
             logo.click();
-            final String current_url = driver.getCurrentUrl();
-            assertEquals(BASE_URL, current_url);
+            assertEquals(BASE_URL, driver.getCurrentUrl());
         }
 
         @Test
@@ -117,9 +116,8 @@ public class CsiTests {
         void clickOnTheLinkCurrentRecordsAndGoToCrimesPresentInTheImageOnTheLeftWhenHoveringTheMouseOverIt () throws InterruptedException {
             driver.get(BASE_URL);
             final WebElement element = driver.findElement(By.xpath("//div[@class='d-flex']//div[@class='middle']"));
-            Actions actions = new Actions(driver);
-            actions.moveToElement(element).perform();
-            actions.click().perform();
+            Thread.sleep(1000);
+            new Actions(driver).moveToElement(element).click().perform();
             assertEquals((BASE_URL + "crimes"), driver.getCurrentUrl());
         }
         
@@ -128,9 +126,7 @@ public class CsiTests {
         void clickOnTheLinkCadastrarAndGoToCrimesRegisterPresentInTheImageOnTheRightWhenHoveringTheMouseOverIt () {
             driver.get(BASE_URL);
             final WebElement element = driver.findElement(By.xpath("//div[@class='d-flex']//div[2]//div[@class='middle']"));
-            Actions actions = new Actions(driver);
-            actions.moveToElement(element).perform();
-            actions.click().perform();
+            new Actions(driver).moveToElement(element).click().perform();
             assertEquals((BASE_URL + "crimes/register"), driver.getCurrentUrl());
         }
 
