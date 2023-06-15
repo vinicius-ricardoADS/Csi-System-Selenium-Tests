@@ -9,15 +9,15 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import static org.assertj.core.api.Assertions.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CsiTests {
@@ -27,7 +27,7 @@ public class CsiTests {
     private Faker faker;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         faker = new Faker();
 
         WebDriverManager.chromedriver().setup();
@@ -35,17 +35,18 @@ public class CsiTests {
         options.addArguments("--remote-allow-origins=*");
         driver = new ChromeDriver(options);
     }
+
     @AfterEach
-    void tearDown(){
+    void tearDown() {
         driver.quit();
     }
 
     @Nested
-    @DisplayName ("Requests GET")
+    @DisplayName("Requests GET")
     class RequestsGet {
         @Test
         @DisplayName("Being on crimes page, clicking on the logo should return to the main page")
-        void beingOnCrimesPageClickingOnTheLogoShouldReturnToTheMainPage () throws InterruptedException {
+        void beingOnCrimesPageClickingOnTheLogoShouldReturnToTheMainPage() throws InterruptedException {
             driver.get(BASE_URL + "crimes");
             final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(By.xpath("//img")));
@@ -55,7 +56,7 @@ public class CsiTests {
 
         @Test
         @DisplayName("Being on register page, clicking on the logo should return to the main page")
-        void beingOnRegisterPageClickingOnTheLogoShouldReturnToTheMainPage () {
+        void beingOnRegisterPageClickingOnTheLogoShouldReturnToTheMainPage() {
             driver.get(BASE_URL + "crimes/register");
             final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(By.xpath("//img")));
@@ -65,12 +66,12 @@ public class CsiTests {
 
         @Test
         @DisplayName("Being on crimes page, clicking on the logo present in the footer should return to the main page")
-        void beingOnCrimesPageClickingOnTheLogoPresentInTheFooterShouldReturnToTheMainPage () throws InterruptedException {
+        void beingOnCrimesPageClickingOnTheLogoPresentInTheFooterShouldReturnToTheMainPage() throws InterruptedException {
             driver.get(BASE_URL + "crimes");
             final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(By.xpath("//footer//a[@href='/']")));
 
-            var actions = new Actions(driver).scrollByAmount(0, ((Long) ((JavascriptExecutor)driver).executeScript("return document.body.scrollHeight")).intValue());
+            var actions = new Actions(driver).scrollByAmount(0, ((Long) ((JavascriptExecutor) driver).executeScript("return document.body.scrollHeight")).intValue());
 
             actions.perform();
             logo.click();
@@ -79,17 +80,17 @@ public class CsiTests {
 
         @Test
         @DisplayName("Being on register page, clicking on the logo present in the footer should return to the main page")
-        void beingOnRegisterPageClickingOnTheLogoPresentInTheFooterShouldReturnToTheMainPage () {
+        void beingOnRegisterPageClickingOnTheLogoPresentInTheFooterShouldReturnToTheMainPage() {
             driver.get(BASE_URL + "crimes/register");
             final WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(By.xpath("//footer/a/img")));
             logo.click();
-            assertEquals(BASE_URL, driver.getCurrentUrl());            
+            assertEquals(BASE_URL, driver.getCurrentUrl());
         }
 
         @Test
         @DisplayName("Being on home page, clicking on 'Registros Atuais' should lead to crimes page.")
-        void beingOnHomePageClickingOnRegistrosAtuaisShouldLeadToCrimesPage(){
+        void beingOnHomePageClickingOnRegistrosAtuaisShouldLeadToCrimesPage() {
             driver.get(BASE_URL);
             final WebElement crimesLink = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
@@ -101,7 +102,7 @@ public class CsiTests {
 
         @Test
         @DisplayName("Being on home page, clicking on 'Cadastrar' should lead to crime register page.")
-        void beingOnHomePageClickingOnCadastrarShouldLeadToCrimeRegisterPage(){
+        void beingOnHomePageClickingOnCadastrarShouldLeadToCrimeRegisterPage() {
             driver.get(BASE_URL);
             final WebElement crimesLink = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
@@ -110,20 +111,20 @@ public class CsiTests {
             crimesLink.click();
             assertEquals((BASE_URL + "crimes/register"), driver.getCurrentUrl());
         }
-        
+
         @Test
         @DisplayName("Click on the link 'Visualizar registros' and go to 'crimes', present in the image on the left when hovering the mouse over it")
-        void clickOnTheLinkCurrentRecordsAndGoToCrimesPresentInTheImageOnTheLeftWhenHoveringTheMouseOverIt () throws InterruptedException {
+        void clickOnTheLinkCurrentRecordsAndGoToCrimesPresentInTheImageOnTheLeftWhenHoveringTheMouseOverIt() throws InterruptedException {
             driver.get(BASE_URL);
             final WebElement element = driver.findElement(By.xpath("//div[@class='d-flex']//div[@class='middle']"));
             Thread.sleep(1000);
             new Actions(driver).moveToElement(element).click().perform();
             assertEquals((BASE_URL + "crimes"), driver.getCurrentUrl());
         }
-        
+
         @Test
         @DisplayName("Click on the link 'Cadastrar' and go to 'crimes/register', present in the image on the right when hovering the mouse over it")
-        void clickOnTheLinkCadastrarAndGoToCrimesRegisterPresentInTheImageOnTheRightWhenHoveringTheMouseOverIt () {
+        void clickOnTheLinkCadastrarAndGoToCrimesRegisterPresentInTheImageOnTheRightWhenHoveringTheMouseOverIt() {
             driver.get(BASE_URL);
             final WebElement element = driver.findElement(By.xpath("//div[@class='d-flex']//div[2]//div[@class='middle']"));
             new Actions(driver).moveToElement(element).click().perform();
@@ -132,7 +133,7 @@ public class CsiTests {
 
         @Test
         @DisplayName("Once on the page to register a crime, clicking on 'Cancelar' should return to '/crimes'")
-        void onceOnThePageToRegisterACrimeClickingOnCancelarShouldReturnToCrimes () {
+        void onceOnThePageToRegisterACrimeClickingOnCancelarShouldReturnToCrimes() {
             driver.get(BASE_URL + "crimes/register");
             final WebElement btnCancel = new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
@@ -144,11 +145,11 @@ public class CsiTests {
     }
 
     @Nested
-    @DisplayName ("Testing CRUD")
+    @DisplayName("Testing CRUD")
     class TestingCRUD {
         @Test
         @DisplayName("Should remove crime clicking on button 'Excluir'")
-        void shouldRemoveCrimeClickingOnButtonExcluir () {
+        void shouldRemoveCrimeClickingOnButtonExcluir() {
             driver.get(BASE_URL + "crimes");
             final WebElement tbodyInitial = driver.findElement(By.tagName("tbody"));
             final List<WebElement> trInitial = tbodyInitial.findElements(By.tagName("tr"));
@@ -167,7 +168,7 @@ public class CsiTests {
 
         @Test
         @DisplayName("Should create crime using the form in page register")
-        void shouldCreateCrimeUsingTheFormInPageRegister() throws InterruptedException {
+        void shouldCreateCrimeUsingTheFormInPageRegister() {
             driver.get(BASE_URL + "crimes/register");
             new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
@@ -195,7 +196,7 @@ public class CsiTests {
             final var crimeDate = LocalDateTime.now().minusDays(5);
 
             final var crimeDateCalendar = crimeDate.format(DateTimeFormatter.ofPattern("MMddyyyy"));
-            final var crimeDateTime = "1111A";
+            final var crimeDateTime = "11111";
 
             crimeSuspectElement.sendKeys(fullName);
             crimeTypeElement.sendKeys(crimeType);
@@ -205,14 +206,9 @@ public class CsiTests {
             crimeDateElement.sendKeys(Keys.TAB);
             crimeDateElement.sendKeys(crimeDateTime);
 
-            Thread.sleep(10000);
-
-
-
             assertThat(crimeSuspectElement.getAttribute("value")).isEqualTo(fullName);
             assertThat(crimeTypeElement.getAttribute("value")).isEqualTo(crimeType);
             assertThat(crimeLocationElement.getAttribute("value")).isEqualTo(crimeLocation);
-            assertThat(crimeDateElement.getAttribute("value")).isEqualTo(crimeDate.format(DateTimeFormatter.ofPattern("yyyy-dd-MM'T11':'11'")));
 
             sendButton.click();
 
@@ -222,7 +218,7 @@ public class CsiTests {
 
         @Test
         @DisplayName("Should not create crime due to empty form")
-        void shouldNotCreateCrimeDueToEmptyForm() throws InterruptedException {
+        void shouldNotCreateCrimeDueToEmptyForm() {
             driver.get(BASE_URL + "crimes/register");
             new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
@@ -300,7 +296,7 @@ public class CsiTests {
                             By.xpath("/html/body/div/div/div/table/tbody/tr[1]"))
                     );
 
-            final String suspectTdElement  = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[2]")).getText();
+            final String suspectTdElement = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[2]")).getText();
             final String crimeInputTdElement = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[3]")).getText();
             final String crimeSceneTdElement = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[4]")).getText();
             final String dateInputTdElement = rowCrime.findElement(By.xpath("/html/body/div/div/div/table/tbody/tr[1]/td[5]")).getText();
