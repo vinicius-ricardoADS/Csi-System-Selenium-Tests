@@ -14,12 +14,9 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.Date;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -174,7 +171,7 @@ public class CsiTests {
 
         @Test
         @DisplayName("Should create crime using the form in page register")
-        void shouldCreateCrimeUsingTheFormInPageRegister() {
+        void shouldCreateCrimeUsingTheFormInPageRegister() throws InterruptedException {
             driver.get(BASE_URL + "crimes/register");
             new WebDriverWait(driver, Duration.ofSeconds(10)) // 10s timeout
                     .until(ExpectedConditions.elementToBeClickable(
@@ -202,7 +199,7 @@ public class CsiTests {
             final var crimeDate = LocalDateTime.now().minusDays(5);
 
             final var crimeDateCalendar = crimeDate.format(DateTimeFormatter.ofPattern("MMddyyyy"));
-            final var crimeDateTime = crimeDate.format(DateTimeFormatter.ofPattern("HHmm"));
+            final var crimeDateTime = "1111A";
 
             crimeSuspectElement.sendKeys(fullName);
             crimeTypeElement.sendKeys(crimeType);
@@ -210,13 +207,16 @@ public class CsiTests {
 
             crimeDateElement.sendKeys(crimeDateCalendar);
             crimeDateElement.sendKeys(Keys.TAB);
-
             crimeDateElement.sendKeys(crimeDateTime);
+
+            Thread.sleep(10000);
+
+
 
             assertThat(crimeSuspectElement.getAttribute("value")).isEqualTo(fullName);
             assertThat(crimeTypeElement.getAttribute("value")).isEqualTo(crimeType);
             assertThat(crimeLocationElement.getAttribute("value")).isEqualTo(crimeLocation);
-            assertThat(crimeDateElement.getAttribute("value")).isEqualTo(crimeDate.format(DateTimeFormatter.ofPattern("yyyy-dd-MM'T'HH:mm")));
+            assertThat(crimeDateElement.getAttribute("value")).isEqualTo(crimeDate.format(DateTimeFormatter.ofPattern("yyyy-dd-MM'T11':'11'")));
 
             sendButton.click();
 
